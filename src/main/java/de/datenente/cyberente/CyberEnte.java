@@ -24,9 +24,25 @@
 package de.datenente.cyberente;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.text.Text;
+
 
 public class CyberEnte implements ModInitializer {
 
     @Override
-    public void onInitialize() {}
+    public void onInitialize() {
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            handler.player.sendMessage(Text.literal("Willkommen auf dem Server!"), false);
+        });
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                dispatcher.register(CommandManager.literal("foo").executes(context -> {
+                    context.getSource().sendFeedback(() -> Text.literal("Called /foo with no arguments"), false);
+
+                    return 1;
+                })));
+    }
 }
